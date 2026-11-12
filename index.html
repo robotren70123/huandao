@@ -137,6 +137,18 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);ou
 .btn{border:var(--line);border-radius:16px;padding:8px 22px;background:var(--accent);color:#fff;font-family:var(--font-fun);font-size:18px;box-shadow:4px 4px 0 var(--ink)}
 .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+
+/* 卡片依螢幕高度縮放，避免需要上下捲動 */
+.mcard{max-height:94vh;max-height:94dvh;padding:clamp(12px,2.4vh,22px) 22px clamp(10px,2vh,18px)}
+.mcard .big{width:clamp(64px,13vh,120px);height:clamp(64px,13vh,120px);font-size:clamp(36px,7vh,66px)}
+.mcard .kick{font-size:clamp(15px,2.2vh,18px);margin-top:clamp(2px,.8vh,8px)}
+.mcard h2{font-size:clamp(24px,4.2vh,34px)}
+.mcard .fact{font-size:clamp(15px,2.3vh,19px);line-height:1.6;margin:clamp(6px,1.4vh,14px) 0}
+.mcard .quiz{padding:clamp(8px,1.2vh,12px) 14px}
+.mcard .quiz .q{font-size:clamp(15px,2.3vh,19px);margin-bottom:clamp(4px,.8vh,8px)}
+.mcard .opts{gap:clamp(5px,.9vh,8px)}
+.mcard .opt{font-size:clamp(14px,2.1vh,17px);padding:clamp(4px,.9vh,8px) 12px}
+.mcard .btnrow{margin-top:clamp(6px,1.4vh,14px)}
 @media (prefers-reduced-motion:reduce){.mcard{animation:none}}
 
 #map text{font-family:var(--font-fun)}
@@ -588,7 +600,7 @@ function showCard(s,opts={}){
     <div class="btnrow"><button class="btn" type="button" data-close>${opts.arrive?"太棒了！":"關閉"}</button></div>`;
     if(opts.arrive)confetti();
   }
-  modal.hidden=false;mcard.querySelector("[data-close]").focus();
+  modal.hidden=false;mcard.scrollTop=0;mcard.querySelector("[data-close]").focus({preventScroll:true});
 }
 mcard.addEventListener("click",e=>{
   if(e.target.closest("[data-close]")){modal.hidden=true;return;}
