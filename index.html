@@ -149,7 +149,15 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);ou
 .mcard .opts{gap:clamp(5px,.9vh,8px)}
 .mcard .opt{font-size:clamp(14px,2.1vh,17px);padding:clamp(4px,.9vh,8px) 12px}
 .mcard .btnrow{margin-top:clamp(6px,1.4vh,14px)}
-@media (prefers-reduced-motion:reduce){.mcard{animation:none}}
+
+/* 橫向螢幕：卡片分左右兩欄（左：徽章與小知識，右：題目），高度減半 */
+@media (min-width:760px) and (orientation:landscape){
+  .mcard{max-width:880px}
+  .mc-in{display:grid;grid-template-columns:1fr 1.05fr;gap:22px;align-items:center}
+  .mc-in .cR .btnrow{justify-content:flex-end}
+}
+.mcard{overflow:auto;animation:none}.mc-in{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@media (prefers-reduced-motion:reduce){.mcard,.mc-in{animation:none}}
 
 #map text{font-family:var(--font-fun)}
 #map .lbl{fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
@@ -585,22 +593,22 @@ function showCard(s,opts={}){
   const km=state.shownKm;
   if(s.km>km+1e-6){
     curQ=null;
-    mcard.innerHTML=`<div class="emo big locked" style="background:#f3eee9"><span>${bimg(s,"bi")||s.e}</span></div><h2 id="mTitle">${esc(s.name)}</h2><div class="county">${esc(s.county)}・第 ${s.km} 公里</div>
-    <p class="fact">還沒到喔！再跑 <b>${fmt(s.km-km)}</b> 公里就會抵達，到了才能打開這張卡片。</p>
-    <div class="quiz"><div class="q">先猜猜看：${esc(s.q)}</div></div>
-    <div class="btnrow"><button class="btn" type="button" data-close>好，繼續跑！</button></div>`;
+    mcard.innerHTML=`<div class="mc-in"><div class="cL"><div class="emo big locked" style="background:#f3eee9"><span>${bimg(s,"bi")||s.e}</span></div><h2 id="mTitle">${esc(s.name)}</h2><div class="county">${esc(s.county)}・第 ${s.km} 公里</div>
+    <p class="fact">還沒到喔！再跑 <b>${fmt(s.km-km)}</b> 公里就會抵達，到了才能打開這張卡片。</p></div>
+    <div class="cR"><div class="quiz"><div class="q">先猜猜看：${esc(s.q)}</div></div>
+    <div class="btnrow"><button class="btn" type="button" data-close>好，繼續跑！</button></div></div></div>`;
   }else{
     curQ=s;
     const order=s.o?s.o.map((t,i)=>({t,i})).sort(()=>Math.random()-.5):[];
-    mcard.innerHTML=`<div class="emo big" style="background:${pale(CC[s.county])}">${bimg(s,"bi")||s.e}</div><div class="kick">${opts.arrive?"🎉 抵達新站！":"第 "+s.km+" 公里"}</div><h2 id="mTitle">${esc(s.name)}</h2><div class="county">${esc(s.county)}</div>
-    <p class="fact">${esc(s.fact)}</p>
-    <div class="quiz"><div class="q">考考你：${esc(s.q)}</div>
+    mcard.innerHTML=`<div class="mc-in"><div class="cL"><div class="emo big" style="background:${pale(CC[s.county])}">${bimg(s,"bi")||s.e}</div><div class="kick">${opts.arrive?"🎉 抵達新站！":"第 "+s.km+" 公里"}</div><h2 id="mTitle">${esc(s.name)}</h2><div class="county">${esc(s.county)}</div>
+    <p class="fact">${esc(s.fact)}</p></div>
+    <div class="cR"><div class="quiz"><div class="q">考考你：${esc(s.q)}</div>
       ${s.o?`<div class="opts">${order.map((x,j)=>`<button type="button" class="opt" data-i="${x.i}">${"ABC"[j]}. ${esc(x.t)}</button>`).join("")}</div><div class="qmsg" aria-live="polite"></div>`:`<div class="qmsg ok">每個人的答案都不一樣，跟同學分享吧！</div>`}</div>
     ${opts.also&&opts.also.length?`<div class="also">這次也經過了：${opts.also.length>6?`${opts.also.slice(0,6).map(x=>x.e+" "+esc(x.name)).join("、")} 等 ${opts.also.length} 站`:opts.also.map(x=>x.e+" "+esc(x.name)).join("、")}</div>`:""}
-    <div class="btnrow"><button class="btn" type="button" data-close>${opts.arrive?"太棒了！":"關閉"}</button></div>`;
+    <div class="btnrow"><button class="btn" type="button" data-close>${opts.arrive?"太棒了！":"關閉"}</button></div></div></div>`;
     if(opts.arrive)confetti();
   }
-  modal.hidden=false;mcard.scrollTop=0;mcard.querySelector("[data-close]").focus({preventScroll:true});
+  modal.hidden=false;fitCard();mcard.querySelector("[data-close]").focus({preventScroll:true});
 }
 mcard.addEventListener("click",e=>{
   if(e.target.closest("[data-close]")){modal.hidden=true;return;}
@@ -608,8 +616,13 @@ mcard.addEventListener("click",e=>{
   const qm=mcard.querySelector(".qmsg");
   if(+b.dataset.i===curQ.a){b.classList.add("right");mcard.querySelectorAll(".opt").forEach(x=>x.disabled=true);qm.className="qmsg ok";qm.textContent="答對了！好厲害 👏";}
   else{b.classList.add("wrong");b.disabled=true;qm.className="qmsg no";qm.textContent="再想想看，還有機會！";}
+  fitCard();
 });
 modal.addEventListener("click",e=>{if(e.target===modal)modal.hidden=true;});
+// 卡片內容太高時整張縮小，讓徽章、題目、按鈕都完整顯示，不用捲動
+function fitCard(){const inn=mcard.querySelector(".mc-in");if(!inn)return;let z=1;inn.style.zoom=1;mcard.scrollTop=0;
+  while(z>0.5&&mcard.scrollHeight>mcard.clientHeight+1){z-=0.05;inn.style.zoom=z;}mcard.scrollTop=0;}
+addEventListener("resize",()=>{if(!modal.hidden)fitCard();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!modal.hidden)modal.hidden=true;});
 function arrivals(from,to){const c=ST.filter(s=>s.km>from+1e-6&&s.km<=to+1e-6);if(c.length)showCard(c[c.length-1],{arrive:true,also:c.slice(0,-1)});}
 function confetti(){
