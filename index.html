@@ -150,12 +150,19 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);ou
 .mcard .opt{font-size:clamp(14px,2.1vh,17px);padding:clamp(4px,.9vh,8px) 12px}
 .mcard .btnrow{margin-top:clamp(6px,1.4vh,14px)}
 
-/* 橫向螢幕：卡片分左右兩欄（左：徽章與小知識，右：題目），高度減半 */
-@media (min-width:760px) and (orientation:landscape){
-  .mcard{max-width:880px}
-  .mc-in{display:grid;grid-template-columns:1fr 1.05fr;gap:22px;align-items:center}
-  .mc-in .cR .btnrow{justify-content:flex-end}
-}
+/* 卡片排版：徽章大圖在左、名稱與小知識在右；三個選項排成一列 */
+.mcard{max-width:760px}
+.mc-in .cL{display:grid;grid-template-columns:auto 1fr;column-gap:clamp(14px,2.4vw,26px);align-items:center;text-align:left}
+.mc-in .cL .big{grid-row:1 / span 4;width:clamp(110px,24vh,190px);height:clamp(110px,24vh,190px);font-size:clamp(60px,13vh,104px);margin:0}
+.mc-in .cL .kick,.mc-in .cL h2,.mc-in .cL .county{text-align:left;margin-left:0}
+.mc-in .cL .kick{margin-top:0}
+.mc-in .cL h2{margin:0 0 2px}
+.mc-in .cL .fact{margin:clamp(4px,1vh,10px) 0 0}
+.mc-in .cR{margin-top:clamp(10px,1.8vh,16px)}
+.mcard .qmsg:empty{display:none}
+@media (min-width:560px){.mcard .opts{grid-template-columns:repeat(3,1fr)}.mcard .opt{text-align:center}}
+@media (max-width:480px){.mc-in .cL{grid-template-columns:1fr;text-align:center}.mc-in .cL .big{grid-row:auto;margin:0 auto 6px;width:120px;height:120px}
+  .mc-in .cL .kick,.mc-in .cL h2,.mc-in .cL .county{text-align:center}}
 .mcard{overflow:auto;animation:none}.mc-in{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
 @media (prefers-reduced-motion:reduce){.mcard,.mc-in{animation:none}}
 
@@ -298,7 +305,7 @@ const ST0=[
  {id:"taipei",b:"台北101",name:"台北",county:"台北市",km:400,ll:[121.56,25.04],e:"🏙️",fact:"台北101有508公尺高，跨年時會放漂亮的煙火。台北四周有山圍著，叫做台北盆地。",q:"四周有山、中間低平的地形叫什麼？",o:["盆地","海島","沙灘"],a:0},
  {id:"yeliu",b:"新北野柳女王",name:"野柳",county:"新北市",km:412,ll:[121.69,25.205],side:-1,e:"👑",fact:"野柳的海邊有很多奇怪的石頭，是海浪和風吹了好久才刻出來的。最有名的一塊長得像女王的頭，叫做「女王頭」。",q:"野柳的女王頭是怎麼形成的？",o:["海浪和風慢慢刻出來","有人雕刻的","從天上掉下來"],a:0},
  {id:"keelung",b:"基隆雨都",name:"基隆",county:"基隆市",km:420,ll:[121.74,25.13],e:"⚓",fact:"基隆很常下雨，所以叫做「雨港」。基隆港有很多大船，廟口夜市的小吃也很好吃。",q:"基隆的外號是什麼？",o:["風城","雨港","花城"],a:1},
- {id:"yilan",at:[121.95,24.84],b:"宜蘭龜山島",name:"宜蘭",county:"宜蘭縣",km:460,ll:[121.75,24.75],e:"🐢",fact:"宜蘭外海有一座龜山島，看起來像一隻烏龜在海上游泳。龜山島其實是一座火山島喔！",q:"龜山島長得像什麼動物？",o:["兔子","烏龜","鯨魚"],a:1},
+ {id:"yilan",at:[121.952,24.868],b:"宜蘭龜山島",name:"宜蘭",county:"宜蘭縣",km:460,ll:[121.75,24.75],e:"🐢",fact:"宜蘭外海有一座龜山島，看起來像一隻烏龜在海上游泳。龜山島其實是一座火山島喔！",q:"龜山島長得像什麼動物？",o:["兔子","烏龜","鯨魚"],a:1},
  {id:"taroko",b:"太魯閣峽谷",name:"太魯閣",at:[121.55,24.17],county:"花蓮縣",km:530,ll:[121.60,24.13],e:"🏞️",fact:"太魯閣峽谷的山壁又高又直，是立霧溪的溪水花了很久很久，把堅硬的大理石慢慢切開形成的。山壁上還有一條條隧道和步道。",q:"太魯閣峽谷是誰「切」出來的？",o:["溪水","怪手","大象"],a:0},
  {id:"hualien",at:[121.68,23.98],b:"花蓮賞鯨",name:"花蓮",county:"花蓮縣",km:565,ll:[121.60,23.98],e:"⛰️",fact:"花蓮是台灣面積最大的縣。從花蓮搭船出海，常常可以看到海豚和鯨魚在太平洋裡游泳！",q:"在花蓮的海上，可以看到什麼動物？",o:["企鵝","鯨魚和海豚","北極熊"],a:1},
  {id:"chishang",b:"池上",name:"池上",county:"台東縣",km:690,ll:[121.22,23.12],e:"🍱",fact:"池上在花東縱谷裡，到處都是一大片稻田，種出來的池上米又香又Q。火車站賣的池上便當，很多人都吃過喔！",q:"池上最有名的是什麼？",o:["池上便當和稻米","冰淇淋","西瓜"],a:0},
@@ -444,6 +451,10 @@ function drawStatic(){
   if(state.geo){const c=P(121.14,23.95);h+=`<text x="${c[0]}" y="${c[1]}" class="lbl geo-m" font-size="16" transform="rotate(-62 ${c[0]} ${c[1]})" letter-spacing="8">中央山脈</text>`;
     [[120.0,24.55,"台灣海峽"],[121.75,23.15,"太平洋"],[120.5,21.82,"巴士海峽"]].forEach(s=>{const p=P(s[0],s[1]);h+=`<text x="${p[0]}" y="${p[1]}" class="sea" font-size="22">${s[2]}</text>`;});
     const ld=P(121.55,22.62),ly=P(121.6,22.05);h+=`<text x="${ld[0]+14}" y="${ld[1]+4}" class="lbl geo-i" font-size="12">綠島</text><text x="${ly[0]+14}" y="${ly[1]+4}" class="lbl geo-i" font-size="12">蘭嶼</text>`;}
+  // 龜山島（宜蘭外海；實際很小，畫大一點才看得到）
+  {const g=P(121.952,24.842),x=g[0],y=g[1];
+    h+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><path d="M-11 2 Q-10 -5 -2 -6 Q5 -6.5 8 -2 L12 -4.5 Q15.5 -3 13 0.5 L8 2 Q2 5 -4 4.5 Q-10 4.5 -11 2Z" fill="${CC["宜蘭縣"]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`+
+      `<text x="17" y="15" class="lbl geo-i" font-size="12">龜山島</text></g>`;}
   // 縣市名稱：放在縣市中間的空白處；小城市用細線拉到旁邊，避免被路線和站點擋住
   CLBL.forEach(c=>{const p=P(c[1],c[2]);
     if(c[3]){const q=P(c[3],c[4]);h+=`<line x1="${q[0].toFixed(1)}" y1="${q[1].toFixed(1)}" x2="${p[0].toFixed(1)}" y2="${(p[1]-4).toFixed(1)}" stroke="${INK}" stroke-width="1.4" stroke-dasharray="2 3"/><circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="2.4" fill="${INK}"/>`;}
